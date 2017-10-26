@@ -5,11 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 public class ForecastActivity extends AppCompatActivity {
 
-    protected static String TAG = ForecastActivity.class.getCanonicalName();
+    // protected static String TAG = ForecastActivity.class.getCanonicalName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
