@@ -9,10 +9,12 @@
 
     <ImageView
         android:id="@+id/offline_weather_image"
-        android:layout_width="175dp"
-        android:layout_height="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:src="@drawable/tardis"
         android:scaleType="fitXY"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
         android:contentDescription="@string/logo_test"/>
 
     <Button
