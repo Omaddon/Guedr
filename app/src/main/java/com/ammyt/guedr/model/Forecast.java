@@ -1,7 +1,9 @@
 package com.ammyt.guedr.model;
 
 
-public class Forecast {
+import java.io.Serializable;
+
+public class Forecast implements Serializable {
 
     public static final int CELSIUS = 0;
     public static final int FARENHEIT = 1;

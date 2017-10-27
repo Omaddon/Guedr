@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ammyt.guedr.model.City;
 import com.ammyt.guedr.model.Forecast;
 import com.ammyt.guedr.R;
 import com.ammyt.guedr.activity.SettingsActivity;
@@ -24,11 +25,24 @@ import com.ammyt.guedr.activity.SettingsActivity;
 public class ForecastFragment extends Fragment {
 
     public static final String PREFERENCE_SHOW_CELSIUS = "showCelsius";
+    public static final String ARG_CITY = "city";
+
     private static final int REQUEST_UNITS = 1;
 
     protected boolean showCelsius;
     private Forecast forecast;
     private View root;
+
+    public static ForecastFragment newInstance(City city) {
+        ForecastFragment fragment = new ForecastFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(ARG_CITY, city);
+
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,13 +65,9 @@ public class ForecastFragment extends Fragment {
         showCelsius = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(PREFERENCE_SHOW_CELSIUS, true);
 
-        // Creamos el mock model
-        forecast = new Forecast(
-                25,
-                10,
-                35,
-                "Soleado con alguna nube",
-                R.drawable.sunny);
+        // Recuperamos el modelo que nos pasan como argumento desde CityPagerActivity
+        City city = (City) getArguments().getSerializable(ARG_CITY);
+        forecast = city.getForecast();
 
         updateForecast();
 
