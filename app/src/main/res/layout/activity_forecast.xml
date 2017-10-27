@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/default_margin"
         android:contentDescription="@string/logo_test"
-        app:srcCompat="@drawable/ico_02"
+        app:srcCompat="@drawable/semisunny"
         android:layout_marginStart="@dimen/default_margin"/>
 
     <LinearLayout

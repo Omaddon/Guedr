@@ -1,7 +1,10 @@
 package com.ammyt.guedr;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,7 +23,7 @@ public class ForecastActivity extends AppCompatActivity {
                 10,
                 35,
                 "Soleado con alguna nube",
-                R.drawable.ico_01);
+                R.drawable.sunny);
 
         setForecast(forecast);
     }
@@ -41,4 +44,25 @@ public class ForecastActivity extends AppCompatActivity {
         forecastDescription.setText(forecast.getDescription());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.menu_forecast_settings, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean superReturn = super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == R.id.menu_show_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+
+        return superReturn;
+    }
 }
