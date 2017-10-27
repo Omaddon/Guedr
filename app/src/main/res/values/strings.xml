@@ -11,4 +11,7 @@
     <string name="select_units">Selecciona las unidades:</string>
     <string name="settings">Ajustes</string>
     <string name="title_activity_city_pager">CityPagerActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

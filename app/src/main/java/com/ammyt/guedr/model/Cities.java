@@ -22,6 +22,10 @@ public class Cities {
         return cities.get(index);
     }
 
+    public List<City> getCities() {
+        return cities;
+    }
+
     public int getCount() {
         return cities.size();
     }
