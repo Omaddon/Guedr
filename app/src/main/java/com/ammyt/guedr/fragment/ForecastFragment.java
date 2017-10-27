@@ -25,12 +25,12 @@ import com.ammyt.guedr.activity.SettingsActivity;
 public class ForecastFragment extends Fragment {
 
     public static final String PREFERENCE_SHOW_CELSIUS = "showCelsius";
-    public static final String ARG_CITY = "city";
 
     private static final int REQUEST_UNITS = 1;
+    private static final String ARG_CITY = "city";
 
     protected boolean showCelsius;
-    private Forecast forecast;
+    private City mCity;
     private View root;
 
     public static ForecastFragment newInstance(City city) {
@@ -49,6 +49,11 @@ public class ForecastFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
+
+        // Recuperamos el modelo que nos pasan como argumento desde CityPagerActivity
+        if (getArguments() != null) {
+            mCity = (City) getArguments().getSerializable(ARG_CITY);
+        }
     }
 
     @Nullable
@@ -65,10 +70,6 @@ public class ForecastFragment extends Fragment {
         showCelsius = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(PREFERENCE_SHOW_CELSIUS, true);
 
-        // Recuperamos el modelo que nos pasan como argumento desde CityPagerActivity
-        City city = (City) getArguments().getSerializable(ARG_CITY);
-        forecast = city.getForecast();
-
         updateForecast();
 
         return root;
@@ -76,11 +77,15 @@ public class ForecastFragment extends Fragment {
 
     private void updateForecast() {
         // Accedemos a las vistas de la interfaz
+        TextView cityName = root.findViewById(R.id.city);
         ImageView forecastImage = root.findViewById(R.id.forecast_image);
         TextView maxTempText = root.findViewById(R.id.max_temp);
         TextView minTempText = root.findViewById(R.id.min_temp);
         TextView humidity = root.findViewById(R.id.humidity);
         TextView forecastDescription = root.findViewById(R.id.forecast_description);
+
+        // Accedemos al modelo
+        Forecast forecast = mCity.getForecast();
 
         // Calculamos las temperaturas en función de las unidades
         // Por defecto las pondremos en Celsius
@@ -99,6 +104,7 @@ public class ForecastFragment extends Fragment {
         }
 
         // Actualizamos la vista con el modelo
+        cityName.setText(mCity.getName());
         forecastImage.setImageResource(forecast.getIcon());
         maxTempText.setText(getString(R.string.max_temp_format, maxTemp, unitsToShow));
         minTempText.setText(getString(R.string.min_temp_format, minTemp, unitsToShow));
