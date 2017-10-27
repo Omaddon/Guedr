@@ -1,10 +1,11 @@
 package com.ammyt.guedr;
 
-/**
- * Created by ammyt on 26/10/17.
- */
 
 public class Forecast {
+
+    public static final int CELSIUS = 0;
+    public static final int FARENHEIT = 1;
+
     private float maxTemp;
     private float minTemp;
     private float humidity;
@@ -19,16 +20,28 @@ public class Forecast {
         this.icon = icon;
     }
 
-    public float getMaxTemp() {
-        return maxTemp;
+    protected float toFarenheit(float celsius) {
+        return (celsius * 1.8f) + 32;
+    }
+
+    public float getMaxTemp(int units) {
+        if (units == CELSIUS) {
+            return maxTemp;
+        } else {
+            return toFarenheit(maxTemp);
+        }
     }
 
     public void setMaxTemp(float maxTemp) {
         this.maxTemp = maxTemp;
     }
 
-    public float getMinTemp() {
-        return minTemp;
+    public float getMinTemp(int units) {
+        if (units == CELSIUS) {
+            return minTemp;
+        } else {
+            return toFarenheit(minTemp);
+        }
     }
 
     public void setMinTemp(float minTemp) {

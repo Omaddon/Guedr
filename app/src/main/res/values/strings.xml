@@ -3,8 +3,8 @@
     <string name="logo_test">Logo de prueba</string>
     <string name="change_stone_system">Cambiar a sistema piedra</string>
     <string name="change_donkey_system">Cambiar a sistema burro</string>
-    <string name="max_temp_format">Temp. max: %.2fºC</string>
-    <string name="min_temp_format">Temp. min: %.2fºC</string>
+    <string name="max_temp_format">Temp. max: %.2f %s</string>
+    <string name="min_temp_format">Temp. min: %.2f %s</string>
     <string name="humidity_format">Humedad: %.2f%%</string>
     <string name="farenheit_units">Farenheit</string>
     <string name="celsius_units">Celsius</string>
