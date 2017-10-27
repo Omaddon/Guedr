@@ -1,4 +1,4 @@
-package com.ammyt.guedr;
+package com.ammyt.guedr.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -15,6 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.ammyt.guedr.model.Forecast;
+import com.ammyt.guedr.R;
+import com.ammyt.guedr.activity.SettingsActivity;
 
 
 public class ForecastFragment extends Fragment {

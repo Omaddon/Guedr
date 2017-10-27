@@ -1,4 +1,4 @@
-package com.ammyt.guedr;
+package com.ammyt.guedr.model;
 
 
 public class Forecast {
