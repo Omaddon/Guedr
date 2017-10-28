@@ -28,11 +28,11 @@ public class CityPagerActivity extends AppCompatActivity {
         // Añadimos el CityPagerFragment a la jerarquía
         FragmentManager fm = getFragmentManager();
 
-        if (fm.findFragmentById(R.id.fragment_city_pager) == null) {
+        if (fm.findFragmentById(R.id.view_pager_fragment) == null) {
             CityPagerFragment fragment = CityPagerFragment.newInstance(cityIndex);
 
             fm.beginTransaction()
-                    .add(R.id.fragment_city_pager, fragment)
+                    .add(R.id.view_pager_fragment, fragment)
                     .commit();
         }
     }
