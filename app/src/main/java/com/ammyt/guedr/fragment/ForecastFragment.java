@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -202,10 +203,15 @@ public class ForecastFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra(DetailActivity.EXTRA_FORECAST, forecastDetail);
                 intent.putExtra(DetailActivity.EXTRA_SHOWCELSIUS, showCelsius);
-                startActivity(intent);
+
+                Bundle animationOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        getActivity(),
+                        v,  // Vista origen común
+                        getString(R.string.transition_to_detail)    // TransitionName que buscará el destino
+                ).toBundle();
+                startActivity(intent, animationOptions);
             }
         });
-
 
         mList.setAdapter(adapter);
     }

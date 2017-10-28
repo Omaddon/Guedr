@@ -4,8 +4,11 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.ammyt.guedr.R;
 import com.ammyt.guedr.fragment.CityListFragment;
@@ -64,6 +67,19 @@ public class ForecastActivity extends AppCompatActivity implements CityListFragm
                         .commit();
             }
         }
+
+        // FloatingAction button
+        FloatingActionButton fab = findViewById(R.id.add_button);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Aquí iría el añadir una ciiudad",
+                        Snackbar.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
     @Override

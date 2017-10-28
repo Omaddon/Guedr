@@ -17,4 +17,5 @@
     <string name="error">Error al descargar.</string>
     <string name="couldnt_download">No se pudo descargar la información del tiempo.</string>
     <string name="retry">Reintentar</string>
+    <string name="transition_to_detail">transitionToDetail</string>
 </resources>
