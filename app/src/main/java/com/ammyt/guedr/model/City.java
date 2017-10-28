@@ -2,13 +2,14 @@ package com.ammyt.guedr.model;
 
 
 import java.io.Serializable;
+import java.util.LinkedList;
 
 public class City implements Serializable {
 
     private String name;
-    private Forecast forecast;
+    private LinkedList<Forecast> forecast;
 
-    public City(String name, Forecast forecast) {
+    public City(String name, LinkedList<Forecast> forecast) {
         this.name = name;
         this.forecast = forecast;
     }
@@ -25,11 +26,11 @@ public class City implements Serializable {
         this.name = name;
     }
 
-    public Forecast getForecast() {
+    public LinkedList<Forecast> getForecast() {
         return forecast;
     }
 
-    public void setForecast(Forecast forecast) {
+    public void setForecast(LinkedList<Forecast> forecast) {
         this.forecast = forecast;
     }
 

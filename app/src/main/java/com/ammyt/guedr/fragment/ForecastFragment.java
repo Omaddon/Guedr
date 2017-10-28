@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.ammyt.guedr.adapter.ForecastRecyclerViewAdapter;
 import com.ammyt.guedr.model.City;
 import com.ammyt.guedr.model.Forecast;
 import com.ammyt.guedr.R;
@@ -31,6 +35,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedList;
 
 
 public class ForecastFragment extends Fragment {
@@ -45,6 +50,7 @@ public class ForecastFragment extends Fragment {
     protected boolean showCelsius;
     private City mCity;
     private View root;
+    private RecyclerView mList;
 
     public static ForecastFragment newInstance(City city) {
         ForecastFragment fragment = new ForecastFragment();
@@ -83,22 +89,28 @@ public class ForecastFragment extends Fragment {
         showCelsius = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(PREFERENCE_SHOW_CELSIUS, true);
 
+        // RECYCLER VIEW
+        // Accedemos al RecyclerView
+        mList = root.findViewById(R.id.forecast_list);
+
+        // Ahora el indicamos cómo debe visualizarse el RecyclerView (su Layout Manager)
+        mList.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        // Ahora le indicamos cómo debe animarse el RecyclerView
+        mList.setItemAnimator(new DefaultItemAnimator());
+
+        // Por último le asignamos un adapter al RecyclerView
+        // Esto lo haremos en updateForecast
+
         updateForecast();
 
         return root;
     }
 
     private void updateForecast() {
-        // Accedemos a las vistas de la interfaz
-        TextView cityName = root.findViewById(R.id.city);
-        ImageView forecastImage = root.findViewById(R.id.forecast_image);
-        TextView maxTempText = root.findViewById(R.id.max_temp);
-        TextView minTempText = root.findViewById(R.id.min_temp);
-        TextView humidity = root.findViewById(R.id.humidity);
-        TextView forecastDescription = root.findViewById(R.id.forecast_description);
 
         // Accedemos al modelo
-        Forecast forecast = mCity.getForecast();
+        LinkedList<Forecast> forecast = mCity.getForecast();
 
         // Accedemos al ViewSwitcher
         final ViewSwitcher viewSwitcher = root.findViewById(R.id.view_switcher);
@@ -106,8 +118,8 @@ public class ForecastFragment extends Fragment {
         viewSwitcher.setOutAnimation(getActivity(), android.R.anim.fade_out);
 
         if (forecast == null) {
-            AsyncTask<City, Integer, Forecast> weatherDownloader =
-                    new AsyncTask<City, Integer, Forecast>() {
+            AsyncTask<City, Integer, LinkedList<Forecast>> weatherDownloader =
+                    new AsyncTask<City, Integer, LinkedList<Forecast>>() {
                 // Esto se ejecutará en el hilo principal ANTES de la task
                 @Override
                 protected void onPreExecute() {
@@ -118,7 +130,7 @@ public class ForecastFragment extends Fragment {
                 }
 
                 @Override
-                protected Forecast doInBackground(City... cities) {
+                protected LinkedList<Forecast> doInBackground(City... cities) {
                     // Métodos útiles que no usaremos
                     //publishProgress(50);
                     //isCancelled();
@@ -131,7 +143,7 @@ public class ForecastFragment extends Fragment {
                 }
 
                 @Override
-                protected void onCancelled(Forecast forecast) {
+                protected void onCancelled(LinkedList<Forecast> forecast) {
                     super.onCancelled(forecast);
 
                     viewSwitcher.setDisplayedChild(FORECAST_VIEW_INDEX);
@@ -139,7 +151,7 @@ public class ForecastFragment extends Fragment {
 
                 // Esto se ejecutará en el hilo principal tras terminar la task
                 @Override
-                protected void onPostExecute(Forecast forecast) {
+                protected void onPostExecute(LinkedList<Forecast> forecast) {
                     super.onPostExecute(forecast);
 
                     if (forecast != null) {
@@ -170,33 +182,14 @@ public class ForecastFragment extends Fragment {
             return;
         }
 
-        // Calculamos las temperaturas en función de las unidades
-        // Por defecto las pondremos en Celsius
-        float maxTemp;
-        float minTemp;
-        String unitsToShow;
+        // Asignamos el adapter al RecyclerView
+        ForecastRecyclerViewAdapter adapter = new ForecastRecyclerViewAdapter(forecast, showCelsius);
+        mList.setAdapter(adapter);
 
-        if (showCelsius) {
-            maxTemp = forecast.getMaxTemp(Forecast.CELSIUS);
-            minTemp = forecast.getMinTemp(Forecast.CELSIUS);
-            unitsToShow = "ºC";
-        } else {
-            maxTemp = forecast.getMaxTemp(Forecast.FARENHEIT);
-            minTemp = forecast.getMinTemp(Forecast.FARENHEIT);
-            unitsToShow = "ºF";
-        }
-
-        // Actualizamos la vista con el modelo
-        cityName.setText(mCity.getName());
-        forecastImage.setImageResource(forecast.getIcon());
-        maxTempText.setText(getString(R.string.max_temp_format, maxTemp, unitsToShow));
-        minTempText.setText(getString(R.string.min_temp_format, minTemp, unitsToShow));
-        humidity.setText(getString(R.string.humidity_format, forecast.getHumidity()));
-        forecastDescription.setText(forecast.getDescription());
     }
 
     // Recordar activar los permisos en el Manifest
-    private Forecast downloadForecast(City city) {
+    private LinkedList<Forecast> downloadForecast(City city) {
         URL url = null;
         InputStream input = null;
 
@@ -204,7 +197,7 @@ public class ForecastFragment extends Fragment {
         // Podríamos usar algún framework, pero lo haremos a mano
         try {
             url = new URL(String.format(
-                    "https://api.openweathermap.org/data/2.5/forecast/daily?q=%s&lang=es&units=metric&appid=d240260dae4220dd585efbf602e28f18",
+                    "https://api.openweathermap.org/data/2.5/forecast/daily?q=%s&lang=es&units=metric&appid=4cef94e2559e8f62a5f567ab654b0a70",
                     city.getName()));
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -222,36 +215,47 @@ public class ForecastFragment extends Fragment {
             // Analizamos los datos para convertilos de JSON a algo manejable por nuestra app
             JSONObject jsonRoot = new JSONObject(sb.toString());
             JSONArray list = jsonRoot.getJSONArray("list");
-            JSONObject today = list.getJSONObject(0);
-            float maxTemp = (float) today.getJSONObject("temp").getDouble("max");
-            float minTemp = (float) today.getJSONObject("temp").getDouble("min");
-            float humidity = (float) today.getDouble("humidity");
-            String description = today.getJSONArray("weather").getJSONObject(0).getString("description");
-            String iconString = today.getJSONArray("weather").getJSONObject(0).getString("icon");
 
-            // Convertimos el texto del icono en drawable
-            // (le quitamos el último carácter que tan solo indica si es de día o de noche)
-            iconString = iconString.substring(0, iconString.length() - 1);
-            int iconInt = Integer.parseInt(iconString);
-            int iconResource = R.drawable.sunny;
+            // Nos descargamos TODOS los días de la precidicción
+            LinkedList<Forecast> forecasts = new LinkedList<>();
 
-            // Me faltan muchas imágenes, estas son solo unas cuantas de prueba
-            switch (iconInt) {
-                case 1:
-                    iconResource = R.drawable.sunny; break;
-                case 2:
-                    iconResource = R.drawable.rainning; break;
-                case 3:
-                    iconResource = R.drawable.semisunny; break;
-                case 4:
-                    iconResource = R.drawable.snowy; break;
-                case 5:
-                    iconResource = R.drawable.storm; break;
-                default:
-                    iconResource = R.drawable.sunny; break;
+            for (int i = 0; i < list.length(); i++) {
+                JSONObject today = list.getJSONObject(i);
+                float maxTemp = (float) today.getJSONObject("temp").getDouble("max");
+                float minTemp = (float) today.getJSONObject("temp").getDouble("min");
+                float humidity = (float) today.getDouble("humidity");
+                String description = today.getJSONArray("weather").getJSONObject(0).getString("description");
+                String iconString = today.getJSONArray("weather").getJSONObject(0).getString("icon");
+
+                // Convertimos el texto del icono en drawable
+                // (le quitamos el último carácter que tan solo indica si es de día o de noche)
+                iconString = iconString.substring(0, iconString.length() - 1);
+                int iconInt = Integer.parseInt(iconString);
+                int iconResource = R.drawable.sunny;
+
+                // Me faltan muchas imágenes, estas son solo unas cuantas de prueba
+                switch (iconInt) {
+                    case 1:
+                        iconResource = R.drawable.sunny; break;
+                    case 2:
+                        iconResource = R.drawable.semisunny; break;
+                    case 3:
+                        iconResource = R.drawable.rainning; break;
+                    case 4:
+                        iconResource = R.drawable.semisunny; break;
+                    case 5:
+                        iconResource = R.drawable.snowy; break;
+                    default:
+                        iconResource = R.drawable.storm; break;
+                }
+
+                Forecast forecast = new Forecast(maxTemp, minTemp, humidity, description, iconResource);
+                forecasts.add(forecast);
             }
 
-            return new Forecast(maxTemp, minTemp, humidity, description, iconResource);
+            // Un sleep para poder ver nuestra progressBar, porque carga muy rápido y no se ve
+            Thread.sleep(1500);
+            return forecasts;
 
         } catch (Exception ex) {
             ex.printStackTrace();
