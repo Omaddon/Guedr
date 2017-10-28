@@ -1,7 +1,9 @@
 package com.ammyt.guedr.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -147,6 +149,18 @@ public class ForecastFragment extends Fragment {
 
                         // Mostramos el forecast
                         viewSwitcher.setDisplayedChild(FORECAST_VIEW_INDEX);
+                    } else {
+                        // Ha habido un error
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle(R.string.error);
+                        alertDialog.setMessage(R.string.couldnt_download);
+                        alertDialog.setPositiveButton(R.string.retry, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateForecast();
+                            }
+                        });
+                        alertDialog.show();
                     }
                 }
             };
