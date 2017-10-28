@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,15 +20,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.ammyt.guedr.R;
+import com.ammyt.guedr.activity.SettingsActivity;
 import com.ammyt.guedr.adapter.ForecastRecyclerViewAdapter;
 import com.ammyt.guedr.model.City;
 import com.ammyt.guedr.model.Forecast;
-import com.ammyt.guedr.R;
-import com.ammyt.guedr.activity.SettingsActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -94,9 +93,13 @@ public class ForecastFragment extends Fragment {
         mList = root.findViewById(R.id.forecast_list);
 
         // Ahora el indicamos cómo debe visualizarse el RecyclerView (su Layout Manager)
-        mList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        // (este es por defecto)
+        //mList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mList.setLayoutManager(new GridLayoutManager(getActivity(),
+                getResources().getInteger(R.integer.recycler_colums)));
 
         // Ahora le indicamos cómo debe animarse el RecyclerView
+        // (este es por defecto)
         mList.setItemAnimator(new DefaultItemAnimator());
 
         // Por último le asignamos un adapter al RecyclerView
