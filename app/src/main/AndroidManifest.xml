@@ -25,6 +25,8 @@
             android:label="@string/title_activity_city_pager"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".activity.DetailActivity">
+        </activity>
     </application>
 
 </manifest>

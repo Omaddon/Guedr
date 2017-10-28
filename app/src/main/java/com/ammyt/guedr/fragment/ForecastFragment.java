@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ViewSwitcher;
 
 import com.ammyt.guedr.R;
+import com.ammyt.guedr.activity.DetailActivity;
 import com.ammyt.guedr.activity.SettingsActivity;
 import com.ammyt.guedr.adapter.ForecastRecyclerViewAdapter;
 import com.ammyt.guedr.model.City;
@@ -113,7 +113,7 @@ public class ForecastFragment extends Fragment {
     private void updateForecast() {
 
         // Accedemos al modelo
-        LinkedList<Forecast> forecast = mCity.getForecast();
+        final LinkedList<Forecast> forecast = mCity.getForecast();
 
         // Accedemos al ViewSwitcher
         final ViewSwitcher viewSwitcher = root.findViewById(R.id.view_switcher);
@@ -187,8 +187,27 @@ public class ForecastFragment extends Fragment {
 
         // Asignamos el adapter al RecyclerView
         ForecastRecyclerViewAdapter adapter = new ForecastRecyclerViewAdapter(forecast, showCelsius);
-        mList.setAdapter(adapter);
 
+        // Nos subscribomos a las pulsaciones de las cards del RecyclerView
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // De esta forma el adapter nos da la posición de la card pulsada en función
+                // de la vista a la que pertenezca dicha card
+                int position = mList.getChildAdapterPosition(v);
+                Forecast forecastDetail = forecast.get(position);
+
+                // Lanzamos la actividad de detalle
+                // (no deberíamos lanzarla desde aquí. Deberíamos avisar a la actividad)
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(DetailActivity.EXTRA_FORECAST, forecastDetail);
+                intent.putExtra(DetailActivity.EXTRA_SHOWCELSIUS, showCelsius);
+                startActivity(intent);
+            }
+        });
+
+
+        mList.setAdapter(adapter);
     }
 
     // Recordar activar los permisos en el Manifest
