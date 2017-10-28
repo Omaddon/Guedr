@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.ammyt.guedr.model.City;
 import com.ammyt.guedr.model.Forecast;
@@ -36,6 +37,8 @@ public class ForecastFragment extends Fragment {
 
     private static final int REQUEST_UNITS = 1;
     private static final String ARG_CITY = "city";
+    private static final int LOADING_VIEW_INDEX = 0;
+    private static final int FORECAST_VIEW_INDEX = 1;
 
     protected boolean showCelsius;
     private City mCity;
@@ -95,12 +98,41 @@ public class ForecastFragment extends Fragment {
         // Accedemos al modelo
         Forecast forecast = mCity.getForecast();
 
+        // Accedemos al ViewSwitcher
+        final ViewSwitcher viewSwitcher = root.findViewById(R.id.view_switcher);
+        viewSwitcher.setInAnimation(getActivity(), android.R.anim.fade_in);
+        viewSwitcher.setOutAnimation(getActivity(), android.R.anim.fade_out);
+
         if (forecast == null) {
             AsyncTask<City, Integer, Forecast> weatherDownloader =
                     new AsyncTask<City, Integer, Forecast>() {
+                // Esto se ejecutará en el hilo principal ANTES de la task
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+
+                    // Mostramos el progressBar
+                    viewSwitcher.setDisplayedChild(LOADING_VIEW_INDEX);
+                }
+
                 @Override
                 protected Forecast doInBackground(City... cities) {
+                    // Métodos útiles que no usaremos
+                    //publishProgress(50);
+                    //isCancelled();
                     return downloadForecast(cities[0]);
+                }
+
+                @Override
+                protected void onProgressUpdate(Integer... values) {
+                    super.onProgressUpdate(values);
+                }
+
+                @Override
+                protected void onCancelled(Forecast forecast) {
+                    super.onCancelled(forecast);
+
+                    viewSwitcher.setDisplayedChild(FORECAST_VIEW_INDEX);
                 }
 
                 // Esto se ejecutará en el hilo principal tras terminar la task
@@ -112,6 +144,9 @@ public class ForecastFragment extends Fragment {
                         // No ha habido errores descargando de la API
                         mCity.setForecast(forecast);
                         updateForecast();
+
+                        // Mostramos el forecast
+                        viewSwitcher.setDisplayedChild(FORECAST_VIEW_INDEX);
                     }
                 }
             };
@@ -152,9 +187,10 @@ public class ForecastFragment extends Fragment {
         InputStream input = null;
 
         // Descargamos los datos de la API
+        // Podríamos usar algún framework, pero lo haremos a mano
         try {
             url = new URL(String.format(
-                    "http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&lang=sp&units=metric&id=d240260dae4220dd585efbf602e28f18",
+                    "https://api.openweathermap.org/data/2.5/forecast/daily?q=%s&lang=es&units=metric&appid=d240260dae4220dd585efbf602e28f18",
                     city.getName()));
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
