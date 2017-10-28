@@ -27,7 +27,8 @@ public class ForecastActivity extends AppCompatActivity implements CityListFragm
         if (fm.findFragmentById(R.id.city_list_fragment) == null) {
             // No está añadido. Lo añadimos con una transacción de fragments
             // Creamos la instancia del nuevo fragment
-            CityListFragment fragment = CityListFragment.newInstance(new Cities().getCities());
+            Cities cities = Cities.getInstance();
+            CityListFragment fragment = CityListFragment.newInstance(cities.getCities());
 
             // Iniciamos la transacción
             fm.beginTransaction()

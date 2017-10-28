@@ -1,14 +1,22 @@
 package com.ammyt.guedr.model;
 
-
 import com.ammyt.guedr.R;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public class Cities {
 
+    private static Cities mInstance;
+
     private LinkedList<City> cities;
+
+    public static Cities getInstance() {
+        if (mInstance == null) {
+            mInstance = new Cities();
+        }
+
+        return mInstance;
+    }
 
     public Cities() {
         cities = new LinkedList<>();
