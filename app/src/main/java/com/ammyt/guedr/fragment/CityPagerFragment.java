@@ -22,16 +22,33 @@ import com.ammyt.guedr.model.City;
 
 public class CityPagerFragment extends Fragment {
 
+    private static final String ARG_INITIAL_CITY_INDEX = "initialCityIndex";
+
     private ViewPager mPager;
     private Cities mCities;
+    private int mInitialCityIndex = 0;
 
     private View root;
+
+    public static CityPagerFragment newInstance(int cityIndex) {
+        CityPagerFragment fragment = new CityPagerFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_INITIAL_CITY_INDEX, cityIndex);
+
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
        setHasOptionsMenu(true);
+
+       if (getArguments() != null) {
+           mInitialCityIndex = getArguments().getInt(ARG_INITIAL_CITY_INDEX, 0);
+       }
     }
 
     @Nullable
@@ -68,9 +85,14 @@ public class CityPagerFragment extends Fragment {
 
         // Actualizamos el nombre de la toolbar en el inicio. Le pasamos la pos 0, pues es la primera
         // vez que se le llama y no habrá actualizado aún y nos encontraremos en la primera city.
-        updateCityInfo(0);
+        moveToCity(mInitialCityIndex);
+        updateCityInfo(mInitialCityIndex);
 
         return root;
+    }
+
+    private void moveToCity(int cityIndex) {
+        mPager.setCurrentItem(cityIndex);
     }
 
     private void updateCityInfo(int position) {
@@ -98,12 +120,12 @@ public class CityPagerFragment extends Fragment {
 
         if (item.getItemId() == R.id.previous) {
             // Movemos el pager hacia atrás
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+            moveToCity(mPager.getCurrentItem() - 1);
 
             return true;
         } else if (item.getItemId() == R.id.next) {
             // Movemos el pager hacia adelante
-            mPager.setCurrentItem(mPager.getCurrentItem() + 1);
+            moveToCity(mPager.getCurrentItem() + 1);
 
             return true;
         }

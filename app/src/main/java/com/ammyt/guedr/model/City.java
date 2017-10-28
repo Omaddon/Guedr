@@ -28,4 +28,10 @@ public class City implements Serializable {
     public void setForecast(Forecast forecast) {
         this.forecast = forecast;
     }
+
+    // Implementamos este método pues es el que llama el adapter para pintar la celda en la lista
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

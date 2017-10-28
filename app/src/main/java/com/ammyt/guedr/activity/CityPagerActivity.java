@@ -1,12 +1,16 @@
 package com.ammyt.guedr.activity;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.ammyt.guedr.R;
+import com.ammyt.guedr.fragment.CityPagerFragment;
 
 public class CityPagerActivity extends AppCompatActivity {
+
+    public static final String EXTRA_CITY_INDEX = "extra_city_index";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +21,20 @@ public class CityPagerActivity extends AppCompatActivity {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setLogo(R.mipmap.ic_launcher);
         setSupportActionBar(toolbar);
+
+        // Recibimos el índice de la ciudad que queremos mostrar
+        int cityIndex = getIntent().getIntExtra(EXTRA_CITY_INDEX, 0);
+
+        // Añadimos el CityPagerFragment a la jerarquía
+        FragmentManager fm = getFragmentManager();
+
+        if (fm.findFragmentById(R.id.fragment_city_pager) == null) {
+            CityPagerFragment fragment = CityPagerFragment.newInstance(cityIndex);
+
+            fm.beginTransaction()
+                    .add(R.id.fragment_city_pager, fragment)
+                    .commit();
+        }
     }
 }
 

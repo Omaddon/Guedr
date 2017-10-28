@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Cities {
 
-    private List<City> cities;
+    private LinkedList<City> cities;
 
     public Cities() {
         cities = new LinkedList<>();
@@ -22,7 +22,7 @@ public class Cities {
         return cities.get(index);
     }
 
-    public List<City> getCities() {
+    public LinkedList<City> getCities() {
         return cities;
     }
 

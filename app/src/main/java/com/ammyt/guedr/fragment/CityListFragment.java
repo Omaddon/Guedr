@@ -1,11 +1,13 @@
 package com.ammyt.guedr.fragment;
 
 
+import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -20,6 +22,7 @@ public class CityListFragment extends Fragment {
     private final static String ARG_CITIES = "cities";
 
     protected LinkedList<City> mCities;
+    protected OnCitySelectedListener mOnCitySelectedListener;
 
     public static CityListFragment newInstance(LinkedList<City> cities) {
         CityListFragment fragment = new CityListFragment();
@@ -61,7 +64,43 @@ public class CityListFragment extends Fragment {
         // Le pasamos el adapter al ListVIew para que rellene la vista
         list.setAdapter(adapter);
 
+        // Asignamos un listener a la lista para detectar cuando se ha pulsado una celda
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // No deberíamos llamar aquí a la activity. Queremos desacoplar
+                // Por ello, lo mejor es avisar a la actividad (por interfaz)
+                if (mOnCitySelectedListener != null) {
+                    City selectedCity = mCities.get(position);
+                    mOnCitySelectedListener.onCitySelected(selectedCity, position);
+                }
+            }
+        });
+
         return root;
+    }
+
+    // Método para avisar al activity
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (getActivity() instanceof OnCitySelectedListener) {
+            mOnCitySelectedListener = (OnCitySelectedListener) getActivity();
+        }
+    }
+
+    // Método para avisar al activity
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mOnCitySelectedListener = null;
+    }
+
+    // Nos creamos esta custom interface para poder comunicarnos con la actividad desde el fragment
+    public interface OnCitySelectedListener {
+        void onCitySelected(City city, int position);
     }
 
 }
