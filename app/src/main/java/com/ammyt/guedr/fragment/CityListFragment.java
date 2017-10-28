@@ -36,6 +36,7 @@ public class CityListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Obtener la lista de ciudades
         if (getArguments() != null) {
             mCities = (LinkedList<City>) getArguments().getSerializable(ARG_CITIES);
         }
