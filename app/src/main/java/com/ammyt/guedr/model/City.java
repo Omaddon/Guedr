@@ -13,6 +13,10 @@ public class City implements Serializable {
         this.forecast = forecast;
     }
 
+    public City(String name) {
+        this(name, null);
+    }
+
     public String getName() {
         return name;
     }

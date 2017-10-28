@@ -21,9 +21,9 @@ public class Cities {
     public Cities() {
         cities = new LinkedList<>();
 
-        cities.add(new City("Madrid", new Forecast(25, 10, 35, "Soleado con alguna nube", R.drawable.semisunny)));
-        cities.add(new City("Barcelona", new Forecast(38, 22, 48, "Soleado.", R.drawable.sunny)));
-        cities.add(new City("Quito", new Forecast(30, 28, 17, "Nuboso", R.drawable.storm)));
+        cities.add(new City("Madrid"));
+        cities.add(new City("Barcelona"));
+        cities.add(new City("Quito"));
     }
 
     public City getCity(int index) {

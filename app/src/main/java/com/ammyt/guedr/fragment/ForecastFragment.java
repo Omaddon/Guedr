@@ -3,6 +3,7 @@ package com.ammyt.guedr.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -20,6 +21,13 @@ import com.ammyt.guedr.model.City;
 import com.ammyt.guedr.model.Forecast;
 import com.ammyt.guedr.R;
 import com.ammyt.guedr.activity.SettingsActivity;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class ForecastFragment extends Fragment {
@@ -87,6 +95,32 @@ public class ForecastFragment extends Fragment {
         // Accedemos al modelo
         Forecast forecast = mCity.getForecast();
 
+        if (forecast == null) {
+            AsyncTask<City, Integer, Forecast> weatherDownloader =
+                    new AsyncTask<City, Integer, Forecast>() {
+                @Override
+                protected Forecast doInBackground(City... cities) {
+                    return downloadForecast(cities[0]);
+                }
+
+                // Esto se ejecutará en el hilo principal tras terminar la task
+                @Override
+                protected void onPostExecute(Forecast forecast) {
+                    super.onPostExecute(forecast);
+
+                    if (forecast != null) {
+                        // No ha habido errores descargando de la API
+                        mCity.setForecast(forecast);
+                        updateForecast();
+                    }
+                }
+            };
+
+            weatherDownloader.execute(mCity);
+
+            return;
+        }
+
         // Calculamos las temperaturas en función de las unidades
         // Por defecto las pondremos en Celsius
         float maxTemp;
@@ -110,6 +144,70 @@ public class ForecastFragment extends Fragment {
         minTempText.setText(getString(R.string.min_temp_format, minTemp, unitsToShow));
         humidity.setText(getString(R.string.humidity_format, forecast.getHumidity()));
         forecastDescription.setText(forecast.getDescription());
+    }
+
+    // Recordar activar los permisos en el Manifest
+    private Forecast downloadForecast(City city) {
+        URL url = null;
+        InputStream input = null;
+
+        // Descargamos los datos de la API
+        try {
+            url = new URL(String.format(
+                    "http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&lang=sp&units=metric&id=d240260dae4220dd585efbf602e28f18",
+                    city.getName()));
+
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.connect();
+
+            byte data[] = new byte[1024];
+            int downloadedBytes;
+            input = con.getInputStream();
+
+            StringBuilder sb = new StringBuilder();
+            while ((downloadedBytes = input.read(data)) != -1) {
+                sb.append(new String(data, 0, downloadedBytes));
+            }
+
+            // Analizamos los datos para convertilos de JSON a algo manejable por nuestra app
+            JSONObject jsonRoot = new JSONObject(sb.toString());
+            JSONArray list = jsonRoot.getJSONArray("list");
+            JSONObject today = list.getJSONObject(0);
+            float maxTemp = (float) today.getJSONObject("temp").getDouble("max");
+            float minTemp = (float) today.getJSONObject("temp").getDouble("min");
+            float humidity = (float) today.getDouble("humidity");
+            String description = today.getJSONArray("weather").getJSONObject(0).getString("description");
+            String iconString = today.getJSONArray("weather").getJSONObject(0).getString("icon");
+
+            // Convertimos el texto del icono en drawable
+            // (le quitamos el último carácter que tan solo indica si es de día o de noche)
+            iconString = iconString.substring(0, iconString.length() - 1);
+            int iconInt = Integer.parseInt(iconString);
+            int iconResource = R.drawable.sunny;
+
+            // Me faltan muchas imágenes, estas son solo unas cuantas de prueba
+            switch (iconInt) {
+                case 1:
+                    iconResource = R.drawable.sunny; break;
+                case 2:
+                    iconResource = R.drawable.rainning; break;
+                case 3:
+                    iconResource = R.drawable.semisunny; break;
+                case 4:
+                    iconResource = R.drawable.snowy; break;
+                case 5:
+                    iconResource = R.drawable.storm; break;
+                default:
+                    iconResource = R.drawable.sunny; break;
+            }
+
+            return new Forecast(maxTemp, minTemp, humidity, description, iconResource);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
